@@ -6,15 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Blog</title>
-    <link rel="stylesheet" href="./app.css">
+    @vite('resources/css/app.css')
+
 </head>
 
 <body>
-    <?php foreach ($posts as $post) : ?>
-    <article>
-        <?= $post ?>
-    </article>
-    <?php endforeach;?>
+    <main class="mx-auto w-1/2">
+        @foreach ($posts as $post)
+        <article class="my-12 pb-12 border-b border-gray-200">
+            <h1 class="text-3xl font-bold"><a href="/posts/{{$post->slug}}">{{$post->title}}</a></h1>
+            <small class="text-gray-500">{{"Published on ".date('M d, Y', $post->date)}}</small>
+            <p class="italic ">{{$post->excerpt}}</p>
+        </article>
+         @endforeach
+    </main>
 </body>
 
 </html>
