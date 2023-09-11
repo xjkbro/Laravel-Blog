@@ -2,56 +2,38 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Facades\File;
-use Spatie\YamlFrontMatter\YamlFrontMatter;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
-class Post
+class Post extends Model
 {
-    public $title;
-    public $excerpt;
-    public $date;
-    public $body;
-    public $slug;
+    use HasFactory;
 
-    public function __construct($title, $excerpt, $date, $body, $slug)
-    {
-        $this->title = $title;
-        $this->excerpt = $excerpt;
-        $this->date = $date;
-        $this->body = $body;
-        $this->slug = $slug;
+    protected $guarded = [];
+
+    protected $with = ['category', 'author'];
+
+    public function scopeFilter($query, array $filters){ // Post:newQuery()->filter()
+        $query->when($filters['search'] ?? false, function($query, $search){
+            $query
+                ->where('title', 'like', '%'. $search . '%')
+                ->orWhere('body', 'like', '%'. $search . '%');
+        });
+
     }
 
-    public static function find($slug)
+    public function category()
     {
-        $post = static::all()->firstWhere('slug', $slug);
-        if(!$post) {
-            abort(404);
-        }
-        return $post;
+        // hasOne, hasMany, belongsTo, belongsToMany
+        return $this->belongsTo(Category::class);
     }
-    public static function findOrFail($slug)
+    // public function user()
+    // {
+    //     return $this->belongsTo(User::class);
+    // }
+    public function author()
     {
-        $post = static::find($slug);
-        if(!$post) {
-            abort(404);
-        }
-        return $post;
-    }
-
-    public static function all()
-    {
-        return cache()->remember('posts.all', 5, fn () => 
-            collect(File::files(resource_path("posts")))
-            ->map(fn ($file) => YamlFrontMatter::parseFile($file->getPathname()))
-            ->map(fn ($doc) => new Post(
-                $doc->title,
-                $doc->excerpt,
-                $doc->date,
-                $doc->body(),
-                $doc->slug
-            ))->sortByDesc('date')
-        );
+        // hasOne, hasMany, belongsTo, belongsToMany
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

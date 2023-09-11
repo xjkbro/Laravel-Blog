@@ -1,14 +1,21 @@
 <x-layout :posts="$posts" title="Home">
-    <section class="w-3/4">
-        @foreach ($posts as $post)
-            <article class="mb-12 pb-12 border-b border-gray-200">
-                <h1 class="text-3xl font-bold"><a href="/posts/{{ $post->slug }}">{{ $post->title }}</a></h1>
-                <small class="text-gray-500">{{ 'Published on ' . date('M d, Y', $post->date) }}</small>
-                <p class="italic mb-4 ">{{ $post->excerpt }}</p>
-                <a href="/posts/{{ $post->slug }}"
-                    class="text-xs hover:border-b p-1 hover:text-black text-gray-500 transition-all">Read
-                    More →</a>
-            </article>
-        @endforeach
-    </section>
+    @if (request()->routeIs('home'))
+        @include('components.hero')
+    @endif
+    @include('components.filter')
+    <main class="mx-auto w-3/4 flex gap-8 mt-12 min-h-screen">
+        @if ($posts->count() > 0)
+            <section class="grid grid-cols-6 gap-4 mb-12">
+                @foreach ($posts as $post)
+                    @if ($loop->iteration < 5)
+                        <x-post-card :post="$post" class="col-span-3" />
+                    @else
+                        <x-post-card :post="$post" class="col-span-2" />
+                    @endif
+                @endforeach
+            </section>
+        @else
+            <p class="text-2xl font-bold text-center">No posts found.</p>
+        @endif
+    </main>
 </x-layout>

@@ -24,13 +24,10 @@
             </ul>
         </nav>
     </header>
-    <main class="mx-auto w-3/4 flex gap-8 mt-12 min-h-screen">
-        <x-sidebar :posts="$posts" />
-        {{ $slot }}
-    </main>
+    {{ $slot }}
     <footer class="h-72 flex items-center bg-slate-200">
         <div class="grid grid-cols-3 w-5/6 mx-auto">
-            <img src="strong arms.png" class="w-24" alt="">
+            {{-- <img src="strong arms.png" class="w-24" alt=""> --}}
             <ul>
                 <li>Test 1</li>
                 <li>Test 2</li>
